@@ -35,6 +35,10 @@ bool salidaOcupada = false;
 // Control de mensajes
 unsigned long tiempoMensaje = 0;
 bool mostrandoEvento = false;
+//Valor centinela, NO es una distancia  real: indica que el sensor no recibio eco
+//(nada al alcance o lectura fallida). Es mayor que DISTANCIA_DETECCION, asi que 
+//nunca se confunde con una persona.
+const float LECTURA_INVALIDA = 999;
 
 
 // =================================================
@@ -54,7 +58,7 @@ float medirDistancia(int trigPin, int echoPin)
 
   if (duracion == 0)
   {
-    return 999;
+    return LECTURA_INVALIDA;
   }
 
   float distancia = duracion * 0.0343 / 2;
