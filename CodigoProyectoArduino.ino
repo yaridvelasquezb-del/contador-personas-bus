@@ -54,10 +54,6 @@ float medirDistancia(int trigPin, int echoPin)
 
   digitalWrite(trigPin, LOW);
 
-  // Timeout de 25000 us (25 ms): equivale a ~4.3 m de ida y vuelta, que es mas que 
-  // el alcance util del HC-SR04 (~4 m).
-  // y evitamos bloquear el loop () esperando un pulso que no va a llegar.
-
   long duracion = pulseIn(echoPin, HIGH, 25000);
 
   if (duracion == 0)
@@ -65,8 +61,6 @@ float medirDistancia(int trigPin, int echoPin)
     return LECTURA_INVALIDA;
   }
 
-  // 0.0343 cm/us es la velocidad del sonido (343 m/s). Se divide entre 2 porque
-  //la duración mide el viaje de ida y vuelta, y solo nos interesa la ida 
   float distancia = duracion * 0.0343 / 2;
 
   return distancia;
@@ -195,11 +189,6 @@ void loop()
   // ===============================================
   // DETECTAR ENTRADA
   // ===============================================
-
-  // Se ignoran lecturas <=2: es el minimo que mide el HC-SR04, por debajo
-  //el eco es poco confiable y genera falsos positivos. LECTURA_INVALIDA queda
-  //fuera por ser mayor que DISTANCIA_DETECCION.
-
   bool detectadoEntrada =
     distanciaEntrada > 2 &&
     distanciaEntrada < DISTANCIA_DETECCION;
