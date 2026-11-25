@@ -35,11 +35,10 @@ bool salidaOcupada = false;
 // Control de mensajes
 unsigned long tiempoMensaje = 0;
 bool mostrandoEvento = false;
-//Valor centinela, NO es una distancia  real: indica que el sensor no recibio eco
-//(nada al alcance o lectura fallida). Es mayor que DISTANCIA_DETECCION, asi que 
-//nunca se confunde con una persona.
+// Valor centinela, NO es una distancia  real: indica que el sensor no recibio eco
+// (nada al alcance o lectura fallida). Es mayor que DISTANCIA_DETECCION, asi que
+// nunca se confunde con una persona.
 const float LECTURA_INVALIDA = 999;
-
 
 // =================================================
 // MEDIR DISTANCIA
@@ -54,11 +53,12 @@ float medirDistancia(int trigPin, int echoPin)
 
   digitalWrite(trigPin, LOW);
 
+  // Timeout de 25000 us (25 ms): equivale a ~4.3 m de ida y vuelta, que es mas que
+  //  el alcance util del HC-SR04 ( ~4 m). Si no hay eco antes, se descarta la lectura
+ // y evitamos bloquear el loop() esperando un pulso que no va a llegar.
 
-  //Timetout de 25000 us (25 ms): equivale a ~4.3 m de ida y vuelta, que es mas que 
-  // el alcance util del HC-SR04 ( ~4 m). Si no hay eco antes, se descarta la lectura
-  //y evitamos bloquear el loop() esperando un pulso que no va a llegar.
   long duracion = pulseIn(echoPin, HIGH, 25000);
+
 
   if (duracion == 0)
   {
@@ -66,13 +66,12 @@ float medirDistancia(int trigPin, int echoPin)
   }
 
   // 0.0343 cm/us es la velocidad del sonido (343 m/s). Se divide entre 2 porque
-  //la duración mide el viaje de ida y vuelta, y solo nos interesa la ida.
+  // la duración mide el viaje de ida y vuelta, y solo nos interesa la ida.
 
   float distancia = duracion * 0.0343 / 2;
 
   return distancia;
 }
-
 
 // =================================================
 // MOSTRAR ESTADO DEL BUS
@@ -122,11 +121,10 @@ void mostrarEstadoBus()
   }
 }
 
-
 // =================================================
 // MOSTRAR EVENTO
 // =================================================
-void mostrarEvento(const char* mensaje)
+void mostrarEvento(const char *mensaje)
 {
   lcd.clear();
 
@@ -142,9 +140,6 @@ void mostrarEvento(const char* mensaje)
 }
 
 
-// =================================================
-// SETUP
-// =================================================
 void setup()
 {
   Serial.begin(9600);
@@ -173,16 +168,13 @@ void setup()
 }
 
 
-// =================================================
-// LOOP
-// =================================================
 void loop()
 {
   // ===============================================
   // MEDIR SENSOR DE ENTRADA
   // ===============================================
   float distanciaEntrada =
-    medirDistancia(TRIG_ENTRADA, ECHO_ENTRADA);
+      medirDistancia(TRIG_ENTRADA, ECHO_ENTRADA);
 
   delay(30);
 
@@ -190,21 +182,19 @@ void loop()
   // MEDIR SENSOR DE SALIDA
   // ===============================================
   float distanciaSalida =
-    medirDistancia(TRIG_SALIDA, ECHO_SALIDA);
-
+      medirDistancia(TRIG_SALIDA, ECHO_SALIDA);
 
   // ===============================================
   // DETECTAR ENTRADA
   // ===============================================
 
-  // se ignoran lecturas <= 2cm: es el minimo que mide el HC-SR04, por debajo 
-  //el eco es poco confiable y genera falsos positivos. LECTURA_INVALIDA queda
-  //fuera por ser mayor que DISTANCIA_DETECCION.
-  
-  bool detectadoEntrada =
-    distanciaEntrada > 2 &&
-    distanciaEntrada < DISTANCIA_DETECCION;
+  // se ignoran lecturas <= 2cm: es el minimo que mide el HC-SR04, por debajo
+  // el eco es poco confiable y genera falsos positivos. LECTURA_INVALIDA queda
+  // fuera por ser mayor que DISTANCIA_DETECCION.
 
+  bool detectadoEntrada =
+      distanciaEntrada > 2 &&
+      distanciaEntrada < DISTANCIA_DETECCION;
 
   if (detectadoEntrada && !entradaOcupada)
   {
@@ -236,14 +226,17 @@ void loop()
     entradaOcupada = false;
   }
 
-
   // ===============================================
   // DETECTAR SALIDA
   // ===============================================
-  bool detectadoSalida =
-    distanciaSalida > 2 &&
-    distanciaSalida < DISTANCIA_DETECCION;
 
+  // se ignoran lecturas <= 2cm: es el minimo que mide el HC-SR04, por debajo
+  // el eco es poco confiable y genera falsos positivos. LECTURA_INVALIDA queda
+  // fuera por ser mayor que DISTANCIA_DETECCION.
+
+  bool detectadoSalida =
+      distanciaSalida > 2 &&
+      distanciaSalida < DISTANCIA_DETECCION;
 
   if (detectadoSalida && !salidaOcupada)
   {
@@ -268,7 +261,6 @@ void loop()
   {
     salidaOcupada = false;
   }
-
 
   // ===============================================
   // VOLVER A MOSTRAR ESTADO
